@@ -1,0 +1,88 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodetodo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodetodo
+  template:
+    metadata:
+      labels:
+        app: nodetodo
+    spec:
+      containers:
+        - name: app
+          image: sagarchavan25/nodetodo:<TAG>
+          ports:
+            - containerPort: 8000
+          env:
+            - name: MONGO_URL
+              value: mongodb://mongodb:27017/database
+          imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodetodo
+spec:
+  selector:
+    app: nodetodo
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: NodePort
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc1
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+spec:
+  selector:
+    app: mongodb
+  ports:
+    - port: 27017
+      targetPort: 27017
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+spec:
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:3.6.17-xenial
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: storage1
+              mountPath: /data1/db
+      volumes:
+        - name: storage1
+          persistentVolumeClaim:
+            claimName: mongo-pvc1

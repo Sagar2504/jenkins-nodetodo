@@ -19,7 +19,7 @@ pipeline {
             sh '''
             /kaniko/executor --dockerfile `pwd`/Dockerfile \
                              --context `pwd` \
-                             --destination=sagarchavan25/myweb:${BUILD_NUMBER}
+                             --destination=sagarchavan25/nodetodo:${BUILD_NUMBER}
             '''
           }
         }
@@ -30,8 +30,8 @@ pipeline {
       steps {
         container('kubectl') {
           withCredentials([file(credentialsId: 'mykubeconfig', variable: 'KUBECONFIG')]) {
-            sh 'sed -i "s/<TAG>/${BUILD_NUMBER}/" myweb.yaml'
-            sh 'kubectl apply -f myweb.yaml'
+            sh 'sed -i "s/<TAG>/${BUILD_NUMBER}/" nodetodo.yaml' 	
+            sh 'kubectl apply -f nodetodo.yaml'
           }
         }
       }
