@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: sagarchavan25/nodetodo:<TAG>
+          image: sagarchavan25/nodetodo:${BUILD_NUMBER}
           ports:
             - containerPort: 8000
           env:
